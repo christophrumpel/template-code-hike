@@ -1,7 +1,7 @@
 import { getStaticFiles } from "@remotion/studio";
 
 export type PublicFolderFile = {
-  filename: string;
+  name: string;
   value: string;
 };
 
@@ -13,7 +13,7 @@ export const getFiles = async () => {
     const contents = await fetch(file.src);
     const text = await contents.text();
 
-    return { filename: file.name, value: text };
+    return { name: file.name, value: text };
   });
 
   return Promise.all(contents);

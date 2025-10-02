@@ -15,7 +15,7 @@ const twoslash = createTwoslashFromCDN({
 });
 
 export const processSnippet = async (step: PublicFolderFile, theme: Theme) => {
-  const splitted = step.filename.split(".");
+  const splitted = step.name.split(".");
   const extension = splitted[splitted.length - 1];
 
   const twoslashResult =

@@ -10,7 +10,7 @@ export const RemotionRoot = () => {
       id="Main"
       component={Main}
       defaultProps={{
-        steps: null,
+        sequences: null,
         themeColors: null,
         theme: "dracula" as const,
         codeWidth: null,
