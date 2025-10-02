@@ -65,6 +65,7 @@ export const calculateMetadata: CalculateMetadataFunction<
         type: "text",
         content: item.content,
         duration,
+        color: item.color,
       });
       totalDuration += duration;
     } else {
@@ -89,7 +90,7 @@ export const calculateMetadata: CalculateMetadataFunction<
   const naturalWidth = codeWidth + horizontalPadding * 2;
   const divisibleByTwo = Math.ceil(naturalWidth / 2) * 2; // MP4 requires an even width
 
-  const minimumWidth = props.width.type === "fixed" ? 0 : 1080;
+  const minimumWidth = props.width.type === "fixed" ? 0 : 1920; // 16:9 aspect ratio (1920x1080)
   const minimumWidthApplied = Math.max(minimumWidth, divisibleByTwo);
 
   return {

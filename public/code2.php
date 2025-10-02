@@ -1,8 +1,9 @@
-public function getStatistics($podcast)
-{
-    return Cache::remember(
-        'podcast-statistics',
-        60,
-        fn() => $podcast->analyze();
-    );
+class User {
+	public string $name;
+	public string $email;
+
+	public function __construct(string $name, string $email) {
+	    $this->name = $name;
+	    $this->email = $email;
+	}
 }

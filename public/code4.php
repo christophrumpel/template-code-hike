@@ -1,1 +1,5 @@
-$podcast->analyze();
+createUser(
+    'Jane Doe',
+    null,
+    25
+);

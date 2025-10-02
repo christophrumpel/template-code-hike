@@ -1,15 +1,14 @@
-import { AbsoluteFill, Series, useVideoConfig } from "remotion";
+import { AbsoluteFill, Series } from "remotion";
 import { CodeTransition } from "./CodeTransition";
 import { HighlightedCode } from "codehike/code";
 import { ThemeColors, ThemeProvider } from "./calculate-metadata/theme";
 import { useMemo } from "react";
 import { RefreshOnCodeChange } from "./ReloadOnCodeChange";
-import { verticalPadding } from "./font";
 import { TextSlide } from "./TextSlide";
 
 export type SequenceStep =
   | { type: "code"; steps: HighlightedCode[]; duration: number }
-  | { type: "text"; content: string; duration: number };
+  | { type: "text"; content: string; duration: number; color?: string };
 
 export type Props = {
   sequences: SequenceStep[] | null;
@@ -36,12 +35,6 @@ export const Main: React.FC<Props> = ({
     };
   }, [themeColors]);
 
-  const style: React.CSSProperties = useMemo(() => {
-    return {
-      padding: `${verticalPadding}px 0px`,
-    };
-  }, []);
-
   const transitionDuration = 30;
 
   // Flatten sequences into individual series items
@@ -54,7 +47,7 @@ export const Main: React.FC<Props> = ({
           durationInFrames={sequence.duration}
           name={`Text: ${sequence.content.substring(0, 20)}...`}
         >
-          <TextSlide content={sequence.content} />
+          <TextSlide content={sequence.content} color={sequence.color} />
         </Series.Sequence>,
       ];
     } else {
@@ -70,17 +63,16 @@ export const Main: React.FC<Props> = ({
         >
           <AbsoluteFill
             style={{
-              width: codeWidth || "100%",
-              margin: "auto",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <AbsoluteFill style={style}>
-              <CodeTransition
-                oldCode={steps[stepIndex - 1]}
-                newCode={step}
-                durationInFrames={transitionDuration}
-              />
-            </AbsoluteFill>
+            <CodeTransition
+              oldCode={steps[stepIndex - 1]}
+              newCode={step}
+              durationInFrames={transitionDuration}
+            />
           </AbsoluteFill>
         </Series.Sequence>
       ));

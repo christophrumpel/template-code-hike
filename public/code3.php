@@ -1,5 +1,6 @@
-#[Cacheable]
-public function getStatistics($podcast)
-{
-    return $podcast->analyze();
+class User {
+	public function __construct(
+		public string $name,
+		public string $email,
+	) {}
 }
