@@ -14,4 +14,6 @@ export const width = z.discriminatedUnion("type", [
 export const schema = z.object({
   theme: themeSchema,
   width,
+  sequenceConfig: z.any().optional(),
+  codeExamples: z.any().optional(),
 });

@@ -1,5 +1,6 @@
 import { AbsoluteFill, Series } from "remotion";
 import { CodeTransition } from "./CodeTransition";
+import { StaticCodeSlide } from "./StaticCodeSlide";
 import { HighlightedCode } from "codehike/code";
 import { ThemeColors, ThemeProvider } from "./calculate-metadata/theme";
 import { useMemo } from "react";
@@ -8,12 +9,15 @@ import { TextSlide } from "./TextSlide";
 
 export type SequenceStep =
   | { type: "code"; steps: HighlightedCode[]; duration: number }
+  | { type: "static-code"; code: HighlightedCode; duration: number }
   | { type: "text"; content: string; duration: number; color?: string };
 
 export type Props = {
   sequences: SequenceStep[] | null;
   themeColors: ThemeColors | null;
   codeWidth: number | null;
+  sequenceConfig?: any;
+  codeExamples?: any;
 };
 
 export const Main: React.FC<Props> = ({
@@ -48,6 +52,25 @@ export const Main: React.FC<Props> = ({
           name={`Text: ${sequence.content.substring(0, 20)}...`}
         >
           <TextSlide content={sequence.content} color={sequence.color} />
+        </Series.Sequence>,
+      ];
+    } else if (sequence.type === "static-code") {
+      return [
+        <Series.Sequence
+          key={`static-code-${seqIndex}`}
+          layout="none"
+          durationInFrames={sequence.duration}
+          name={sequence.code.meta}
+        >
+          <AbsoluteFill
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <StaticCodeSlide code={sequence.code} />
+          </AbsoluteFill>
         </Series.Sequence>,
       ];
     } else {

@@ -14,11 +14,17 @@ import {
   waitUntilDone,
 } from "../font";
 import { HighlightedCode } from "codehike/code";
-import { sequence } from "../sequence-config";
+import { sequence as defaultSequence } from "../sequence-config";
 
 export const calculateMetadata: CalculateMetadataFunction<
   Props & z.infer<typeof schema>
 > = async ({ props }) => {
+  // Use sequenceConfig from props if provided, otherwise use default
+  const sequence = props.sequenceConfig || defaultSequence;
+
+  // Use codeExamples from props if provided
+  const providedCodeExamples = props.codeExamples || {};
+
   const contents = await getFiles();
 
   await waitUntilDone();
@@ -47,11 +53,23 @@ export const calculateMetadata: CalculateMetadataFunction<
 
   // Process all code files (skip empty files)
   const allCodeSnippets: Map<string, HighlightedCode> = new Map();
+
+  // Process files from public/ directory
   for (const snippet of contents) {
     if (snippet.value && snippet.value.trim().length > 0) {
       const processed = await processSnippet(snippet, props.theme);
       allCodeSnippets.set(snippet.name, processed);
     }
+  }
+
+  // Process code examples provided via props
+  for (const [id, example] of Object.entries(providedCodeExamples)) {
+    const exampleData = example as { code: string; lang: string };
+    const processed = await processSnippet(
+      { name: id + "." + exampleData.lang, value: exampleData.code },
+      props.theme
+    );
+    allCodeSnippets.set(id, processed);
   }
 
   // Build sequences based on configuration
@@ -68,11 +86,26 @@ export const calculateMetadata: CalculateMetadataFunction<
         color: item.color,
       });
       totalDuration += duration;
+    } else if (item.type === "static-code") {
+      const code = allCodeSnippets.get(item.file);
+      if (code) {
+        const duration = item.duration || defaultStepDuration;
+        sequences.push({
+          type: "static-code",
+          code,
+          duration,
+        });
+        totalDuration += duration;
+      }
     } else {
       // Code sequence
       const steps: HighlightedCode[] = [];
-      for (const fileName of item.files) {
-        const code = allCodeSnippets.get(fileName);
+
+      // Support both 'files' (from file system) and 'examples' (from props)
+      const identifiers = item.files || item.examples || [];
+
+      for (const identifier of identifiers) {
+        const code = allCodeSnippets.get(identifier);
         if (code) {
           steps.push(code);
         }

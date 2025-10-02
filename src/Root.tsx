@@ -3,6 +3,7 @@ import { Main } from "./Main";
 
 import { calculateMetadata } from "./calculate-metadata/calculate-metadata";
 import { schema } from "./calculate-metadata/schema";
+import { SequenceItem } from "./sequence-config";
 
 export const RemotionRoot = () => {
   return (
@@ -17,6 +18,7 @@ export const RemotionRoot = () => {
         width: {
           type: "auto",
         },
+        sequenceConfig: null as SequenceItem[] | null,
       }}
       fps={30}
       height={1080}
