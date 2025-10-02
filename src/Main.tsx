@@ -1,5 +1,4 @@
 import { AbsoluteFill, Series, useVideoConfig } from "remotion";
-import { ProgressBar } from "./ProgressBar";
 import { CodeTransition } from "./CodeTransition";
 import { HighlightedCode } from "codehike/code";
 import { ThemeColors, ThemeProvider } from "./calculate-metadata/theme";
@@ -47,7 +46,6 @@ export const Main: React.FC<Props> = ({ steps, themeColors, codeWidth }) => {
             margin: "auto",
           }}
         >
-          <ProgressBar steps={steps} />
           <AbsoluteFill style={style}>
             <Series>
               {steps.map((step, index) => (
