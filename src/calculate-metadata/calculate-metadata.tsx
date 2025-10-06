@@ -27,7 +27,7 @@ export const calculateMetadata: CalculateMetadataFunction<
 
   const contents = await getFiles();
 
-  await waitUntilDone();
+    await waitUntilDone();
   const widthPerCharacter = measureText({
     text: "A",
     fontFamily,
@@ -97,6 +97,15 @@ export const calculateMetadata: CalculateMetadataFunction<
         });
         totalDuration += duration;
       }
+    } else if (item.type === "custom") {
+      const duration = item.duration || defaultTextDuration;
+      sequences.push({
+        type: "custom",
+        component: item.component,
+        duration,
+        props: item.props,
+      });
+      totalDuration += duration;
     } else {
       // Code sequence
       const steps: HighlightedCode[] = [];

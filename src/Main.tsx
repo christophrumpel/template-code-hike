@@ -1,4 +1,4 @@
-import { AbsoluteFill, Series } from "remotion";
+import { AbsoluteFill, Series, Audio, staticFile } from "remotion";
 import { CodeTransition } from "./CodeTransition";
 import { StaticCodeSlide } from "./StaticCodeSlide";
 import { HighlightedCode } from "codehike/code";
@@ -6,11 +6,14 @@ import { ThemeColors, ThemeProvider } from "./calculate-metadata/theme";
 import { useMemo } from "react";
 import { RefreshOnCodeChange } from "./ReloadOnCodeChange";
 import { TextSlide } from "./TextSlide";
+import { Starfield } from "./Starfield";
+import { IntroSlide } from "./custom-slides/IntroSlide";
 
 export type SequenceStep =
   | { type: "code"; steps: HighlightedCode[]; duration: number }
   | { type: "static-code"; code: HighlightedCode; duration: number }
-  | { type: "text"; content: string; duration: number; color?: string };
+  | { type: "text"; content: string; duration: number; color?: string }
+  | { type: "custom"; component: string; duration: number; props?: any };
 
 export type Props = {
   sequences: SequenceStep[] | null;
@@ -41,9 +44,30 @@ export const Main: React.FC<Props> = ({
 
   const transitionDuration = 30;
 
+  // Custom component registry
+  const customComponents: Record<string, React.ComponentType<any>> = {
+    intro: IntroSlide,
+  };
+
   // Flatten sequences into individual series items
   const seriesItems = sequences.flatMap((sequence, seqIndex) => {
-    if (sequence.type === "text") {
+    if (sequence.type === "custom") {
+      const CustomComponent = customComponents[sequence.component];
+      if (!CustomComponent) {
+        console.warn(`Custom component "${sequence.component}" not found`);
+        return [];
+      }
+      return [
+        <Series.Sequence
+          key={`custom-${seqIndex}`}
+          layout="none"
+          durationInFrames={sequence.duration}
+          name={`Custom: ${sequence.component}`}
+        >
+          <CustomComponent {...(sequence.props || {})} />
+        </Series.Sequence>,
+      ];
+    } else if (sequence.type === "text") {
       return [
         <Series.Sequence
           key={`text-${seqIndex}`}
@@ -105,6 +129,9 @@ export const Main: React.FC<Props> = ({
   return (
     <ThemeProvider themeColors={themeColors}>
       <AbsoluteFill style={outerStyle}>
+        <Audio src={staticFile("bg_music.mp3")} volume={() => 0.2} />
+        <Audio src={staticFile("01_intro.m4a")} volume={() => 0.6} />
+        <Starfield starCount={200} />
         <Series>{seriesItems}</Series>
       </AbsoluteFill>
       <RefreshOnCodeChange />
